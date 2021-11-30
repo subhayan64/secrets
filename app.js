@@ -31,7 +31,7 @@ mongoose.connect("mongodb+srv://"+process.env.ATLAS_UNAME+":"+process.env.ATLAS_
 // mongoose.set("useCreateIndex", true);
 
 const userSchema = new mongoose.Schema ({
-  email: String,
+  username: String,
   password: String,
   googleId: String,
   secret: String
@@ -61,7 +61,8 @@ passport.use(new GoogleStrategy({
   },
   function(accessToken, refreshToken, profile, cb) {
     // console.log(profile);
-    User.findOrCreate({ googleId: profile.id }, function (err, user) {
+    // console.log(profile.emails[0].value);
+    User.findOrCreate({ googleId: profile.id, username: profile.emails[0].value}, function (err, user) {
       return cb(err, user);
     });
   }
@@ -73,7 +74,7 @@ app.get("/", function(req, res){
 });
 
 app.get('/auth/google',
-  passport.authenticate('google', { scope: ['profile']
+  passport.authenticate('google', { scope: ['profile', 'email']
   })
 );
 
