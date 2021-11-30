@@ -26,7 +26,8 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-mongoose.connect("mongodb://localhost:27017/userDB");
+// mongoose.connect("mongodb://localhost:27017/userDB");
+mongoose.connect("mongodb+srv://"+process.env.ATLAS_UNAME+":"+process.env.ATLAS_PWD+"@cluster0.f1rgu.mongodb.net/userDB?retryWrites=true&w=majority");
 // mongoose.set("useCreateIndex", true);
 
 const userSchema = new mongoose.Schema ({
@@ -102,10 +103,12 @@ app.get("/secrets", function(req, res){
   //   res.redirect("/login");
   // }
 
-  User.find({"secret": {$ne: null}}, function(err, foundUsers){
+
+  User.find({"secret": {$ne: null}},{"_id": 0, "secret": 1}, function(err, foundUsers){
     if (err) {
       console.log(err);
     }else {
+      // console.log(foundUsers);
       res.render("secrets", {usersWithSecrets: foundUsers});
     }
   });
